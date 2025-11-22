@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Memorex Parasitologia</title>
+    <title>Memorex Parasitologiao</title>
     <style>
         :root {
             --primary: #2c3e50; /* Azul escuro */
@@ -59,6 +59,36 @@
 
         button:hover { background-color: var(--primary); transform: translateY(-2px); }
         button.active { background-color: var(--accent); box-shadow: 0 4px 6px rgba(230, 126, 34, 0.4); }
+
+        /* SUB-NAVIGATION (Novos botões internos) */
+        .sub-nav-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--light);
+            padding-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .sub-btn {
+            background-color: white;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+        }
+
+        .sub-btn:hover {
+            background-color: var(--light);
+            transform: none;
+        }
+
+        .sub-btn.active-sub {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
 
         /* Content Card */
         .content-card {
@@ -162,47 +192,82 @@
 <div id="contentContainer">
     <div class="content-card active" style="text-align:center; padding: 40px;">
         <h2 style="border:none;">Selecione uma patologia</h2>
-        <p>Utilize o menu acima para carregar as informações.</p>
+        <p>Utilize o menu acima para carregar as informações completas.</p>
     </div>
 </div>
 
 <script>
-    /* Base de dados consolidada a partir do PDF (Tabela) e DOCX (Mecanismos).
-       As referências numéricas nos comentários indicam a fonte da informação.
+    /* ATUALIZAÇÃO: O objeto 'amebiase' agora contém a propriedade 'subtypes', 
+       que guarda os dados das 3 variantes solicitadas.
     */
     const database = {
         amebiase: {
             title: "Amebíase",
-            // Dados da Tabela PDF 
-            agent: "Entamoeba histolytica",
-            host: "Homem",
-            infective: "Cisto",
-            transmission: "Oral-fecal (Ingestão de cistos)",
-            site: "Intestino grosso (cólon) e em casos graves fígado",
-            symptoms: "Diarreia com muco e sangue, dor abdominal, disenteria, abscesso hepático amebiano.",
-            diagnosis: "Exame de fezes (cistos/trofozoítos), sorologia, imagem.",
-            // Dados do DOCX [cite: 5-16, 60-67]
-            treatments: [
-                {
-                    drugs: "Metronidazol / Tinidazol",
-                    class: "Nitroimidazóis",
-                    mech: "São pró-fármacos reduzidos por proteínas do parasita (ferredoxina). Geram <strong>radicais livres</strong> que danificam o DNA do protozoário."
+            hasSubtypes: true,
+            subtypes: {
+                histolytica: {
+                    tabName: "1. Intestinais (E. histolytica)",
+                    title: "Amebas Intestinais (Entamoeba histolytica)",
+                    agent: "Entamoeba histolytica. (Nota: A E. dispar é morfologicamente idêntica, mas não patogênica)",
+                    host: "O ser humano é o principal hospedeiro.",
+                    infective: "Cisto maduro (tetranucleado).",
+                    transmission: "<strong>Direta:</strong> pessoa a pessoa (fecal-oral).<br><strong>Indireta:</strong> ingestão de água ou alimentos contaminados com cistos.",
+                    site: "Intestino grosso (ceco e cólon ascendente). Pode ocorrer disseminação extraintestinal para fígado, pulmões e cérebro.",
+                    symptoms: "<strong>Assintomático:</strong> A maioria.<br><strong>Intestinal (Invasiva):</strong> Disenteria/diarreia sanguinolenta, cólica, tenesmo, colite fulminante, ameboma.<br><strong>Extraintestinal:</strong> Abscesso hepático (mais comum), pulmonar ou cerebral.",
+                    diagnosis: "<strong>Parasitológico:</strong> Cistos (fezes sólidas) ou Trofozoítos (líquidas).<br><strong>Imunológico:</strong> ELISA (Ag fecal ou IgG sérico).<br><strong>Molecular:</strong> PCR (distingue da E. dispar).<br><strong>Imagem:</strong> US e TC (abscessos).",
+                    treatments: [
+                        {
+                            drugs: "Teclosan ou Etofamida",
+                            class: "Dicloracetamidas",
+                            mech: "Ação direta sobre os trofozoítos no lúmen intestinal (amebicida luminal), interferindo no metabolismo do parasita."
+                        },
+                        {
+                            drugs: "Metronidazol / Tinidazol",
+                            class: "Nitroimidazóis",
+                            mech: "Ativados por redução em células anaeróbias (como amebas). Formam compostos tóxicos que danificam o DNA do parasita e inibem síntese de ác. nucleicos."
+                        }
+                    ]
                 },
-                {
-                    drugs: "Teclozan",
-                    class: "Amebicida Luminal",
-                    mech: "Interfere no metabolismo de fosfolipídios na parede celular da forma trofozoíta no lúmen intestinal."
+                naegleria: {
+                    tabName: "2. Vida Livre (Naegleria)",
+                    title: "Ameba de Vida Livre: Naegleria fowleri",
+                    agent: "Naegleria fowleri (Gênero Naegleria)",
+                    host: "Ser humano (acidental).",
+                    infective: "Trofozoíto.",
+                    transmission: "Contato com água contaminada (rios, piscinas). Entrada via <strong>neuroepitélio olfatório (nariz)</strong> durante natação/mergulho.",
+                    site: "Sistema Nervoso Central (Cérebro/Meninges).",
+                    symptoms: "<strong>Doença:</strong> Meningoencefalite Amebiana Primária (MAP).<br>Doença rara, fulminante e necrótica. Meningoencefalite hemorrágica aguda (geralmente em jovens saudáveis).",
+                    diagnosis: "Exame do Líquido Cefalorraquidiano (LCR) para pesquisa de trofozoítos, cultura e PCR.",
+                    treatments: [
+                        {
+                            drugs: "Anfotericina B (Histórico)",
+                            class: "Polieno",
+                            mech: "O tratamento é difícil e frequentemente ineficaz. Requer diagnóstico rápido devido à gravidade."
+                        }
+                    ]
                 },
-                {
-                    drugs: "Paromomicina",
-                    class: "Aminoglicosídeo",
-                    mech: "Liga-se à subunidade 30S do ribossomo, inibindo a síntese proteica. Baixa absorção (age no lúmen)."
+                acanthamoeba: {
+                    tabName: "3. Vida Livre (Acanthamoeba)",
+                    title: "Ameba de Vida Livre: Acanthamoeba spp.",
+                    agent: "Acanthamoeba spp.",
+                    host: "Imunocompetentes (Ceratite); Imunodeprimidos (GAE).",
+                    infective: "Trofozoíto e Cisto.",
+                    transmission: "<strong>Ocular:</strong> Lentes de contato, água contaminada.<br><strong>Sistêmica:</strong> Entrada via pele ou trato respiratório -> disseminação hematogênica.",
+                    site: "Olhos (córnea), pele, pulmões e SNC.",
+                    symptoms: "<strong>Ceratite:</strong> Dor, fotofobia, úlcera de córnea (cegueira).<br><strong>GAE (Encefalite):</strong> Lesões cutâneas crônicas, alterações neurológicas focais.",
+                    diagnosis: "<strong>Ceratite:</strong> Raspado de córnea (cistos/trofozoítos).<br><strong>GAE:</strong> Biópsia de tecido, LCR.",
+                    treatments: [
+                        {
+                            drugs: "Biguanidas / Diamidinas",
+                            class: "Tópico (Ocular)",
+                            mech: "Uso de polihexametileno biguanida ou propamidina para ceratite."
+                        }
+                    ]
                 }
-            ]
+            }
         },
         giardiase: {
             title: "Giardíase",
-            // PDF 
             agent: "Giardia lamblia (ou duodenalis)",
             host: "Homem, cão, gato",
             infective: "Cisto",
@@ -210,7 +275,6 @@
             site: "Intestino delgado (duodeno e jejuno)",
             symptoms: "Diarreia, gordura (esteatorreia), cólica, náusea, distensão abdominal.",
             diagnosis: "Exame de fezes (cistos/trofozoítos), teste de antígeno nas fezes.",
-            // DOCX [cite: 5-9, 17-25]
             treatments: [
                 {
                     drugs: "Metronidazol / Tinidazol",
@@ -220,13 +284,12 @@
                 {
                     drugs: "Albendazol",
                     class: "Benzimidazóis",
-                    mech: "Liga-se à beta-tubulina, impedindo a formação de microtúbulos. Interfere na função do <strong>disco suctorial</strong> (adesão) e transporte de glicose."
+                    mech: "Liga-se à beta-tubulina. Interfere na função do <strong>disco suctorial</strong> e transporte de glicose."
                 }
             ]
         },
         tricomoniase: {
             title: "Tricomoníase",
-            // PDF 
             agent: "Trichomonas vaginalis",
             host: "Homem e mulher",
             infective: "Trofozoíto",
@@ -234,113 +297,99 @@
             site: "Trato geniturinário",
             symptoms: "<strong>Mulheres:</strong> Corrimento espumoso, prurido, ardor, disúria. <br><strong>Homens:</strong> Uretrite (ou assintomático).",
             diagnosis: "Exame a fresco, cultura, PCR.",
-            // DOCX [cite: 5-9, 12-16]
             treatments: [
                 {
                     drugs: "Metronidazol / Tinidazol",
                     class: "Nitroimidazóis",
-                    mech: "Mecanismo de redução intracelular que libera radicais livres, destruindo o DNA do parasita. (Obrigatório tratar o casal)."
+                    mech: "Destruição do DNA do parasita por radicais livres. (Obrigatório tratar o casal)."
                 }
             ]
         },
         leishmaniose: {
             title: "Leishmaniose",
-            // PDF 
             agent: "Leishmania spp (L. braziliensis, L. donovani, L. infantum)",
-            host: "Vertebrado: Homem/Cão. Invertebrado: Flebotomíneo (Mosquito-palha)",
+            host: "Vertebrado: Homem/Cão. Invertebrado: Mosquito-palha",
             infective: "Promastigota (no vetor)",
             transmission: "Picada do mosquito-palha (Lutzomyia)",
             site: "Pele, mucosas, fígado, baço e medula óssea",
-            symptoms: "<strong>Tegumentar:</strong> Úlceras cutâneas. <br><strong>Visceral (Calazar):</strong> Febre, hepatoesplenomegalia, anemia, pancitopenia.",
+            symptoms: "<strong>Tegumentar:</strong> Úlceras cutâneas. <br><strong>Visceral:</strong> Febre, hepatoesplenomegalia, anemia, pancitopenia.",
             diagnosis: "Exame parasitológico, PCR, sorologia.",
-            // DOCX [cite: 68-71, 19]
             treatments: [
                 {
-                    drugs: "Antimoniais",
-                    class: "Antimoniais Pentavalentes",
-                    mech: "Inibem enzimas glicolíticas e oxidação de ácidos graxos. Interferem no metabolismo da <strong>tripanotiona</strong> (defesa antioxidante)."
+                    drugs: "Antimoniais Pentavalentes",
+                    class: "Antimoniais",
+                    mech: "Inibem enzimas glicolíticas e a oxidação de ácidos graxos. Bloqueiam defesa antioxidante (tripanotiona)."
                 },
                 {
                     drugs: "Albendazol (Off-label)",
                     class: "Benzimidazóis",
-                    mech: "Inibição da polimerização de microtúbulos (beta-tubulina)."
+                    mech: "Inibição da polimerização de microtúbulos."
                 }
             ]
         },
         toxoplasmose: {
             title: "Toxoplasmose",
-            // PDF 
             agent: "Toxoplasma gondii",
-            host: "Definitivo: Gato. Intermediário: Homem, outros mamíferos.",
-            infective: "Oocisto (fezes gato) ou Cisto tecidual (carne)",
-            transmission: "Ingestão de oocistos (solo/água) ou cistos (carne crua); Congênita.",
+            host: "Definitivo: Gato. Intermediário: Homem.",
+            infective: "Oocisto (gato) ou Cisto tecidual (carne)",
+            transmission: "Ingestão de oocistos ou cistos; Congênita.",
             site: "Músculos, cérebro, retina, placenta",
-            symptoms: "Assintomática (imunocompetentes), febre, linfadenopatia. <br><strong>Gravidez:</strong> Risco fetal. <br><strong>AIDS:</strong> Encefalite.",
+            symptoms: "Assintomática, febre. <br><strong>Gravidez:</strong> Risco fetal. <br><strong>AIDS:</strong> Encefalite.",
             diagnosis: "Sorologia (IgM, IgG), PCR.",
-            // DOCX [cite: 26-38]
             treatments: [
                 {
                     drugs: "Sulfadiazina + Pirimetamina",
-                    class: "Antifolatos (Bloqueio Sequencial)",
-                    mech: "<strong>Sulfadiazina:</strong> Inibe a di-hidropteroato sintetase (análogo do PABA). <br><strong>Pirimetamina:</strong> Inibe a di-hidrofolato redutase (DHFR). <br>Resultado: Cessam síntese de DNA."
+                    class: "Antifolatos",
+                    mech: "Bloqueio sequencial da síntese de DNA (inibem di-hidropteroato sintetase e DHFR)."
                 },
                 {
                     drugs: "Ácido Folínico",
-                    class: "Adjuvante (Protetor)",
-                    mech: "Administrado para proteger a medula óssea do paciente (prevenir anemia). O parasita não consegue usar o folato exógeno."
+                    class: "Adjuvante",
+                    mech: "Protege a medula óssea do paciente (previne anemia)."
                 }
             ]
         },
         malaria: {
             title: "Malária",
-            // PDF 
-            agent: "Plasmodium vivax, P. falciparum, P. malariae, P. ovale",
+            agent: "Plasmodium vivax, P. falciparum...",
             host: "Definitivo: Mosquito Anopheles. Intermediário: Homem.",
             infective: "Esporozoíto",
             transmission: "Picada do mosquito infectado",
-            site: "Fígado (fase hepática) e Hemácias (fase eritrocitária)",
-            symptoms: "Febre periódica, calafrios, anemia, esplenomegalia, cefaleia.",
-            diagnosis: "Gota espessa, esfregaço sanguíneo, teste rápido.",
-            // DOCX [cite: 39-58]
+            site: "Fígado e Hemácias",
+            symptoms: "Febre periódica, calafrios, anemia, esplenomegalia.",
+            diagnosis: "Gota espessa, teste rápido.",
             treatments: [
                 {
                     drugs: "Cloroquina / Quinina",
                     class: "Quinolinicos",
-                    mech: "Impedem a polimerização do <strong>Heme</strong> (tóxico) em hemozoína. O acúmulo de Heme causa lise do parasita."
+                    mech: "Impedem polimerização do Heme (tóxico). Lise do parasita."
                 },
                 {
                     drugs: "Artemeter + Lumefantrina",
-                    class: "Derivados de Artemisinina",
-                    mech: "A ponte endoperóxido rompe ao contatar o ferro do heme, liberando radicais livres que alquilam proteínas do parasita."
+                    class: "Artemisininas",
+                    mech: "Ponte endoperóxido gera radicais livres ao contatar ferro do heme."
                 },
                 {
                     drugs: "Primaquina",
                     class: "8-Aminoquinolinas",
-                    mech: "Gera EROs mitocondriais. Único capaz de matar <strong>hipnozoítos</strong> (fase dormente hepática do <em>P. vivax</em>) prevenindo recaídas."
+                    mech: "Gera EROs. Mata <strong>hipnozoítos</strong> (fígado)."
                 }
             ]
         },
         chagas: {
             title: "Doença de Chagas",
-            // PDF 
             agent: "Trypanosoma cruzi",
-            host: "Definitivo: Homem. Intermediário: Barbeiro (Triatoma).",
+            host: "Homem e Barbeiro",
             infective: "Tripomastigota Metacíclico",
-            transmission: "Contato com fezes do barbeiro, transfusão, congênita, oral (açaí/caldo)",
-            site: "Sangue, coração, tubo digestivo, sistema nervoso",
-            symptoms: "<strong>Fase Aguda:</strong> Febre, linfadenopatia, sinal de Romaña. <br><strong>Fase Crônica:</strong> Cardiomegalia, megacólon, megaesôfago.",
-            diagnosis: "Exame de sangue (aguda), sorologia (crônica).",
-            // DOCX [cite: 5-16]
+            transmission: "Fezes do barbeiro, transfusão, oral, congênita",
+            site: "Coração, tubo digestivo, SNC",
+            symptoms: "<strong>Aguda:</strong> Sinal de Romaña. <br><strong>Crônica:</strong> Cardiomegalia, megacólon.",
+            diagnosis: "Sangue (aguda), Sorologia (crônica).",
             treatments: [
                 {
-                    drugs: "Benznidazol",
-                    class: "Nitroimidazol",
-                    mech: "Reduzido por nitro-redutases do parasita, gerando radicais livres e intermediários tóxicos que danificam o DNA."
-                },
-                {
-                    drugs: "Nifurtimox",
-                    class: "Nitrofurano",
-                    mech: "Mecanismo similar de estresse oxidativo e dano ao DNA."
+                    drugs: "Benznidazol / Nifurtimox",
+                    class: "Nitroderivados",
+                    mech: "Geração de radicais livres e danos ao DNA."
                 }
             ]
         }
@@ -349,10 +398,8 @@
     const navContainer = document.getElementById('navContainer');
     const contentContainer = document.getElementById('contentContainer');
 
-    function renderContent(key) {
-        const data = database[key];
-        contentContainer.innerHTML = '';
-        
+    // Função auxiliar para gerar o HTML dos dados (parte repetitiva)
+    function buildCardHTML(data) {
         const pharmaHTML = data.treatments.map(t => `
             <div class="drug-card">
                 <div class="drug-name">${t.drugs} <span class="drug-class">${t.class}</span></div>
@@ -360,52 +407,97 @@
             </div>
         `).join('');
 
-        const html = `
-            <div class="content-card active">
-                <h2>${data.title}</h2>
-                
-                <div class="data-grid">
-                    <div class="info-group">
-                        <span class="field-label">Agente Etiológico</span>
-                        <div class="field-value">${data.agent}</div>
-                        
-                        <span class="field-label">Hospedeiros</span>
-                        <div class="field-value">${data.host}</div>
+        return `
+            <h2>${data.title}</h2>
+            <div class="data-grid">
+                <div class="info-group">
+                    <span class="field-label">Agente Etiológico</span>
+                    <div class="field-value">${data.agent}</div>
+                    
+                    <span class="field-label">Hospedeiros</span>
+                    <div class="field-value">${data.host}</div>
 
-                        <span class="field-label">Forma Infectante</span>
-                        <div class="field-value">${data.infective}</div>
+                    <span class="field-label">Forma Infectante</span>
+                    <div class="field-value">${data.infective}</div>
 
-                        <span class="field-label">Transmissão</span>
-                        <div class="field-value">${data.transmission}</div>
-                    </div>
-
-                    <div class="info-group highlight">
-                        <span class="field-label">Local de Parasitismo</span>
-                        <div class="field-value">${data.site}</div>
-
-                        <span class="field-label">Sintomas / Quadro Clínico</span>
-                        <div class="field-value" style="color:#d35400;">${data.symptoms}</div>
-
-                        <span class="field-label">Diagnóstico</span>
-                        <div class="field-value">${data.diagnosis}</div>
-                    </div>
+                    <span class="field-label">Transmissão</span>
+                    <div class="field-value">${data.transmission}</div>
                 </div>
 
-                <div class="pharma-container">
-                    <h3 class="pharma-title">💊 Tratamento & Mecanismos</h3>
-                    ${pharmaHTML}
+                <div class="info-group highlight">
+                    <span class="field-label">Local de Parasitismo</span>
+                    <div class="field-value">${data.site}</div>
+
+                    <span class="field-label">Sintomas / Quadro Clínico</span>
+                    <div class="field-value" style="color:#d35400;">${data.symptoms}</div>
+
+                    <span class="field-label">Diagnóstico</span>
+                    <div class="field-value">${data.diagnosis}</div>
                 </div>
             </div>
+
+            <div class="pharma-container">
+                <h3 class="pharma-title">💊 Tratamento & Mecanismos</h3>
+                ${pharmaHTML}
+            </div>
         `;
-        contentContainer.innerHTML = html;
     }
 
-    // Criar botões
+    // Função Principal de Renderização
+    function renderContent(key) {
+        const mainData = database[key];
+        contentContainer.innerHTML = '';
+        
+        const cardDiv = document.createElement('div');
+        cardDiv.className = "content-card active";
+
+        // Se for Amebíase (ou tiver subtipos)
+        if (mainData.hasSubtypes) {
+            const subKeys = Object.keys(mainData.subtypes);
+            
+            // 1. Criar Container dos Botões Internos
+            const subNav = document.createElement('div');
+            subNav.className = "sub-nav-container";
+            
+            // 2. Criar Área de Conteúdo Variável
+            const dynamicContent = document.createElement('div');
+            dynamicContent.innerHTML = buildCardHTML(mainData.subtypes[subKeys[0]]); // Default: Histolytica
+
+            // 3. Gerar Botões
+            subKeys.forEach((subKey, index) => {
+                const btn = document.createElement('button');
+                btn.className = `sub-btn ${index === 0 ? 'active-sub' : ''}`; // Primeiro ativo
+                btn.innerText = mainData.subtypes[subKey].tabName;
+                
+                btn.onclick = () => {
+                    // Remove ativo dos outros
+                    document.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('active-sub'));
+                    btn.classList.add('active-sub');
+                    // Atualiza conteúdo
+                    dynamicContent.innerHTML = buildCardHTML(mainData.subtypes[subKey]);
+                };
+                subNav.appendChild(btn);
+            });
+
+            cardDiv.appendChild(subNav);
+            cardDiv.appendChild(dynamicContent);
+
+        } else {
+            // Renderização Normal
+            cardDiv.innerHTML = buildCardHTML(mainData);
+        }
+
+        contentContainer.appendChild(cardDiv);
+    }
+
+    // Criar botões principais (Navegação Superior)
     Object.keys(database).forEach(key => {
         const btn = document.createElement('button');
         btn.innerText = database[key].title;
         btn.onclick = () => {
-            document.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('button').forEach(b => {
+                if(!b.classList.contains('sub-btn')) b.classList.remove('active');
+            });
             btn.classList.add('active');
             renderContent(key);
         };
